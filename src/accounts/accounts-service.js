@@ -77,6 +77,10 @@ const AccountsService = {
     return AccountsService.getAllAccounts(db).where("acc.id", id).first();
   },
 
+  getByStage(db, stage) {
+    return AccountsService.getAllAccounts(db).where("acc.stage", stage);
+  },
+
   insertAccount(db, newAccount, address) {
     return db
       .insert(newAccount)
@@ -156,12 +160,29 @@ const AccountsService = {
       .groupBy("con.id", "usr.id");
   },
 
+  deleteAccount(db, id) {
+    return db.raw(`DELETE from accounts where id=${id};`);
+  },
+
+  // updateAccount(db, id, newArticleFields) {
+  //   return db.raw(`UPDATE from accounts where id=${id};`);
+
+  //   knex("blogful_articles").where({ id }).update(newArticleFields);
+  // },
+
+  updateAccount(db, id, newAccountFields) {
+    return db
+      .from("accounts AS acc")
+      .where("acc.id", id)
+      .update(newAccountFields);
+  },
+
   serializeAccount(account) {
     const { user, address, notes, contacts } = account;
     return {
       id: account.id,
       name: xss(account.name),
-      stage: xss(account.stage),
+      stage: AccountsService.serializeAccountStage(account.stage),
       website: xss(account.website),
       industry: xss(account.industry),
       territory: xss(account.territory),
@@ -201,6 +222,14 @@ const AccountsService = {
       //   date_created: xss(contacts.date_created),
       // },
     };
+  },
+
+  serializeAccountStage(stage) {
+    let serializedStage = stage
+      .split("-")
+      .map((s) => s.substr(0, 1).toUpperCase() + s.substr(1))
+      .join(" ");
+    return xss(serializedStage);
   },
 
   serializeNote(note) {

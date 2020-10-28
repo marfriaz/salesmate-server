@@ -86,6 +86,13 @@ accountsRouter
   //the async function has not been finished yet
   .get((req, res) => {
     res.json(AccountsService.serializeAccount(res.account));
+  })
+  .delete((req, res, next) => {
+    AccountsService.deleteAccount(req.app.get("db"), req.params.account_id)
+      .then((numRowsAffected) => {
+        res.status(204).end();
+      })
+      .catch(next);
   });
 
 accountsRouter
@@ -115,6 +122,18 @@ accountsRouter
       .catch(next);
   });
 
+accountsRouter
+  .route("/stage/:accountStage")
+
+  .all(checkAccountStageExists)
+  .get((req, res) => {
+    const results = res.accounts.map((account) =>
+      AccountsService.serializeAccount(account)
+    );
+    console.log(results);
+    res.send(results);
+  });
+
 /* async/await syntax for promises */
 async function checkAccountIdExists(req, res, next) {
   try {
@@ -132,6 +151,30 @@ async function checkAccountIdExists(req, res, next) {
       });
 
     res.account = account;
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function checkAccountStageExists(req, res, next) {
+  const stanardizedStage = req.params.accountStage
+    .split(" ")
+    .map((s) => s.substr(0, 1).toLowerCase() + s.substr(1))
+    .join("-");
+
+  try {
+    const accounts = await AccountsService.getByStage(
+      req.app.get("db"),
+      stanardizedStage
+    );
+
+    if (!accounts)
+      return res.status(404).json({
+        error: `Account stage doesn't exist`,
+      });
+
+    res.accounts = accounts;
     next();
   } catch (error) {
     next(error);

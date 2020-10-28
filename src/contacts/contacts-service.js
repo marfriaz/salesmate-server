@@ -29,7 +29,7 @@ const ContactsService = {
       .first();
   },
 
-  insertNote(db, newContact) {
+  insertContact(db, newContact) {
     return db
       .insert(newContact)
       .into("contacts")
