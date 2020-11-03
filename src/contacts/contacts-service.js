@@ -38,15 +38,27 @@ const ContactsService = {
       .then((contact) => ContactsService.getById(db, contact.id));
   },
 
+  updateContact(db, id, updates) {
+    return db
+      .from("contacts AS con")
+      .where("con.id", id)
+      .update(updates)
+      .then(() => ContactsService.getById(db, id));
+  },
+
+  deleteContact(db, id) {
+    return db.raw(`DELETE from contacts where id=${id};`);
+  },
+
   serializeContact(contact) {
     const { user } = contact;
     return {
       id: contact.id,
       account_id: contact.account_id,
-      name: xss(contact.text),
-      title: xss(contact.text),
-      phone: xss(contact.text),
-      email: xss(contact.text),
+      name: xss(contact.name),
+      title: xss(contact.title),
+      phone: xss(contact.phone),
+      email: xss(contact.email),
       date_created: new Date(contact.date_created),
       user: {
         id: user.id,

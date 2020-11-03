@@ -35,6 +35,18 @@ const NotesService = {
       .then((note) => NotesService.getById(db, note.id));
   },
 
+  updateNote(db, id, updates) {
+    return db
+      .from("notes AS note")
+      .where("note.id", id)
+      .update(updates)
+      .then(() => NotesService.getById(db, id));
+  },
+
+  deleteNote(db, id) {
+    return db.raw(`DELETE from notes where id=${id};`);
+  },
+
   serializeNote(note) {
     const { user } = note;
     return {

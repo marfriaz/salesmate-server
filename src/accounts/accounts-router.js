@@ -93,6 +93,82 @@ accountsRouter
         res.status(204).end();
       })
       .catch(next);
+  })
+  .patch(jsonBodyParser, (req, res, next) => {
+    const {
+      name,
+      stage,
+      website,
+      industry,
+      territory,
+      employee_range,
+      phone,
+      fax,
+      linkedin,
+      street,
+      city,
+      zip_code,
+      state,
+      country,
+    } = req.body;
+
+    const address = {
+      street,
+      city,
+      zip_code,
+      state,
+      country,
+    };
+
+    const accountToUpdate = {
+      name,
+      stage,
+      website,
+      industry,
+      territory,
+      employee_range,
+      phone,
+      fax,
+      linkedin,
+    };
+
+    const numberOfValues = Object.values(accountToUpdate).filter(Boolean)
+      .length;
+
+    const numOfAddressValues = Object.values(address).filter(Boolean).length;
+
+    if (numberOfValues && numOfAddressValues === 0)
+      return res.status(400).json({
+        error: {
+          message: `Request body must content either 'address', or 'account fields'`,
+        },
+      });
+
+    AccountsService.updateAccount(
+      req.app.get("db"),
+      req.params.account_id,
+      accountToUpdate
+    )
+      .then((account) => {
+        res
+          .status(201)
+          .location(path.posix.join(req.originalUrl, `/${account.id}`))
+          .json(AccountsService.serializeAccount(account));
+      })
+      .catch(next);
+
+    AccountsService.updateAddress(
+      req.app.get("db"),
+      req.params.account_id,
+      address
+    )
+      .then((account) => {
+        res
+          .status(201)
+          .location(path.posix.join(req.originalUrl, `/${account.id}`))
+          .json(AccountsService.serializeAccount(account));
+      })
+      .catch(next);
   });
 
 accountsRouter
@@ -130,7 +206,6 @@ accountsRouter
     const results = res.accounts.map((account) =>
       AccountsService.serializeAccount(account)
     );
-    console.log(results);
     res.send(results);
   });
 

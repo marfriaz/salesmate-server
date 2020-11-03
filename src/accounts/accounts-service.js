@@ -164,17 +164,17 @@ const AccountsService = {
     return db.raw(`DELETE from accounts where id=${id};`);
   },
 
-  // updateAccount(db, id, newArticleFields) {
-  //   return db.raw(`UPDATE from accounts where id=${id};`);
+  updateAccount(db, id, updates) {
+    return db.from("accounts AS acc").where("acc.id", id).update(updates);
+    // .then(() => AccountsService.getById(db, id));
+  },
 
-  //   knex("blogful_articles").where({ id }).update(newArticleFields);
-  // },
-
-  updateAccount(db, id, newAccountFields) {
+  updateAddress(db, id, address) {
     return db
-      .from("accounts AS acc")
-      .where("acc.id", id)
-      .update(newAccountFields);
+      .from("addresses AS add")
+      .where("add.account_id", id)
+      .update(address);
+    // .then(() => AccountsService.getById(db, id));
   },
 
   serializeAccount(account) {

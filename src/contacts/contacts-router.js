@@ -35,4 +35,49 @@ ContactsRouter.route("/").post(
   }
 );
 
+ContactsRouter.route("/:contact_id")
+  .delete((req, res, next) => {
+    ContactsService.deleteContact(req.app.get("db"), req.params.contact_id)
+      .then((numRowsAffected) => {
+        res.status(204).end();
+      })
+      .catch(next);
+  })
+
+  .patch(jsonBodyParser, (req, res, next) => {
+    const { name, title, phone, email } = req.body;
+
+    const contactToUpdate = {
+      name,
+      title,
+      phone,
+      email,
+    };
+
+    console.log(contactToUpdate);
+
+    const numberOfValues = Object.values(contactToUpdate).filter(Boolean)
+      .length;
+
+    if (numberOfValues === 0)
+      return res.status(400).json({
+        error: {
+          message: `Request body must content either 'name', 'title', 'phone' or 'email'`,
+        },
+      });
+
+    ContactsService.updateContact(
+      req.app.get("db"),
+      req.params.contact_id,
+      contactToUpdate
+    )
+      .then((contact) => {
+        res
+          .status(201)
+          .location(path.posix.join(req.originalUrl, `/${contact.id}`))
+          .json(ContactsService.serializeContact(contact));
+      })
+      .catch(next);
+  });
+
 module.exports = ContactsRouter;
