@@ -165,16 +165,11 @@ const AccountsService = {
   },
 
   updateAccount(db, id, updates) {
-    return db.from("accounts AS acc").where("acc.id", id).update(updates);
-    // .then(() => AccountsService.getById(db, id));
-  },
-
-  updateAddress(db, id, address) {
     return db
-      .from("addresses AS add")
-      .where("add.account_id", id)
-      .update(address);
-    // .then(() => AccountsService.getById(db, id));
+      .from("accounts AS acc")
+      .where("acc.id", id)
+      .update(updates)
+      .then(() => AccountsService.getById(db, id));
   },
 
   serializeAccount(account) {
@@ -193,6 +188,7 @@ const AccountsService = {
       date_created: new Date(account.date_created),
       address: {
         id: address.id,
+        account_id: address.account_id,
         street: xss(address.street),
         city: xss(address.city),
         zip_code: xss(address.zip_code),

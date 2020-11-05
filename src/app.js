@@ -4,6 +4,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
 const accountsRouter = require("./accounts/accounts-router");
+const addressesRouter = require("./addresses/addresses-router");
 const notesRouter = require("./notes/notes-router");
 const contactsRouter = require("./contacts/contacts-router");
 const authRouter = require("./auth/auth-router");
@@ -20,6 +21,7 @@ app.use(cors());
 app.use(helmet());
 
 app.use("/api/accounts", accountsRouter);
+app.use("/api/addresses", addressesRouter);
 app.use("/api/notes", notesRouter);
 app.use("/api/contacts", contactsRouter);
 app.use("/api/auth", authRouter);

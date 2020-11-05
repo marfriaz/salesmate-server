@@ -83,7 +83,6 @@ accountsRouter
 accountsRouter
   .route("/:account_id")
   .all(checkAccountIdExists)
-  //the async function has not been finished yet
   .get((req, res) => {
     res.json(AccountsService.serializeAccount(res.account));
   })
@@ -105,20 +104,7 @@ accountsRouter
       phone,
       fax,
       linkedin,
-      street,
-      city,
-      zip_code,
-      state,
-      country,
     } = req.body;
-
-    const address = {
-      street,
-      city,
-      zip_code,
-      state,
-      country,
-    };
 
     const accountToUpdate = {
       name,
@@ -135,9 +121,7 @@ accountsRouter
     const numberOfValues = Object.values(accountToUpdate).filter(Boolean)
       .length;
 
-    const numOfAddressValues = Object.values(address).filter(Boolean).length;
-
-    if (numberOfValues && numOfAddressValues === 0)
+    if (numberOfValues === 0)
       return res.status(400).json({
         error: {
           message: `Request body must content either 'address', or 'account fields'`,
@@ -156,24 +140,11 @@ accountsRouter
           .json(AccountsService.serializeAccount(account));
       })
       .catch(next);
-
-    AccountsService.updateAddress(
-      req.app.get("db"),
-      req.params.account_id,
-      address
-    )
-      .then((account) => {
-        res
-          .status(201)
-          .location(path.posix.join(req.originalUrl, `/${account.id}`))
-          .json(AccountsService.serializeAccount(account));
-      })
-      .catch(next);
   });
 
 accountsRouter
   .route("/:account_id/notes")
-  // .all(requireAuth)
+  .all(requireAuth)
   .all(checkAccountIdExists)
   .get((req, res, next) => {
     AccountsService.getNotesForAccount(req.app.get("db"), req.params.account_id)
@@ -185,7 +156,7 @@ accountsRouter
 
 accountsRouter
   .route("/:account_id/contacts")
-  // .all(requireAuth)
+  .all(requireAuth)
   .all(checkAccountIdExists)
   .get((req, res, next) => {
     AccountsService.getContactsForAccount(
