@@ -36,6 +36,7 @@ ContactsRouter.route("/").post(
 );
 
 ContactsRouter.route("/:contact_id")
+  .all(checkContactIdExists)
   .delete((req, res, next) => {
     ContactsService.deleteContact(req.app.get("db"), req.params.contact_id)
       .then((numRowsAffected) => {
@@ -80,4 +81,25 @@ ContactsRouter.route("/:contact_id")
       .catch(next);
   });
 
+async function checkContactIdExists(req, res, next) {
+  try {
+    // suspends execution of rest of function until promise is fulfilled or rejected
+    // and it yields the control back to where the async function was called
+    // if waiting for that
+    const contact = await ContactsService.getById(
+      req.app.get("db"),
+      req.params.contact_id
+    );
+
+    if (!contact)
+      return res.status(404).json({
+        error: `Contact doesn't exist`,
+      });
+
+    res.contact = contact;
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
 module.exports = ContactsRouter;

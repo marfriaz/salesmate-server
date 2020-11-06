@@ -109,6 +109,41 @@ function makeAddressesArray(accounts) {
   ];
 }
 
+function makeContactsArray(users, accounts) {
+  return [
+    {
+      id: 1,
+      user_id: users[0].id,
+      account_id: accounts[0].id,
+      name: "Oceane Mosciski",
+      title: "sales representative",
+      phone: "977-938-0152",
+      email: "cooper52@yahoo.com",
+      date_created: new Date("2029-01-22T16:28:32.615Z"),
+    },
+    {
+      id: 2,
+      user_id: users[1].id,
+      account_id: accounts[1].id,
+      name: "Sallie Goyette",
+      title: "mining engineer",
+      phone: "977-938-0152",
+      email: "delpha97@hotmail.com",
+      date_created: new Date("2029-01-22T16:28:32.615Z"),
+    },
+    {
+      id: 3,
+      user_id: users[2].id,
+      account_id: accounts[2].id,
+      name: "Kaylah Ledner",
+      title: "mobile home installer",
+      phone: "939-283-8147",
+      email: "lera_mccullough@gmail.com",
+      date_created: new Date("2029-01-22T16:28:32.615Z"),
+    },
+  ];
+}
+
 function makeexpectedAccount(users, account, addresses) {
   const user = users.find((user) => user.id === account.user_id);
   const address = addresses.find(
@@ -147,6 +182,30 @@ function makeexpectedAccount(users, account, addresses) {
       date_created: user.date_created,
     },
   };
+}
+
+function makeExpectedContact(users, account, contacts) {
+  const user = users.find((user) => user.id === account.user_id);
+  const contact = contacts.find((contact) => contact.account_id === account.id);
+
+  return [
+    {
+      id: contact.id,
+      account_id: account.id,
+      name: contact.name,
+      title: contact.title,
+      phone: contact.phone,
+      email: contact.email,
+      date_created: contact.date_created.toISOString(),
+      user: {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        date_created: user.date_created,
+      },
+    },
+  ];
 }
 
 function makeMaliciousAccount(user) {
@@ -193,6 +252,14 @@ function makeAccountsFixtures() {
   const testAddresses = makeAddressesArray(testAccounts);
 
   return { testUsers, testAccounts, testAddresses };
+}
+
+function makeContactsFixtures() {
+  const testUsers = makeUsersArray();
+  const testAccounts = makeAccountsArray(testUsers);
+  const testContacts = makeContactsArray(testUsers, testAccounts);
+
+  return { testUsers, testAccounts, testContacts };
 }
 
 function cleanTables(db) {
@@ -248,6 +315,17 @@ function seedAccountsTables(db, users, accounts, addresses) {
   });
 }
 
+function seedContactsTables(db, users, accounts, contacts) {
+  return db.transaction(async (trx) => {
+    await seedUsers(trx, users);
+    await trx.into("accounts").insert(accounts);
+    await trx.into("contacts").insert(contacts);
+    await trx.raw(`SELECT setval('contacts_id_seq', ?)`, [
+      contacts[contacts.length - 1].id,
+    ]);
+  });
+}
+
 function seedMaliciousAccount(db, user, account) {
   const badAddress = {
     id: 1,
@@ -276,12 +354,16 @@ module.exports = {
   makeUsersArray,
   makeAccountsArray,
   makeAddressesArray,
+  makeContactsArray,
   makeexpectedAccount,
+  makeExpectedContact,
   makeMaliciousAccount,
 
   makeAccountsFixtures,
+  makeContactsFixtures,
   cleanTables,
   seedAccountsTables,
+  seedContactsTables,
   seedMaliciousAccount,
   makeAuthHeader,
   seedUsers,

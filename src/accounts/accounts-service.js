@@ -135,6 +135,7 @@ const AccountsService = {
       .select(
         "con.id",
         "con.user_id",
+        "con.account_id",
         "con.name",
         "con.title",
         "con.phone",
@@ -234,7 +235,7 @@ const AccountsService = {
       id: note.id,
       user_id: xss(note.user_id),
       text: xss(note.text),
-      date_created: xss(note.date_created),
+      date_created: new Date(note.date_created),
       user: {
         id: user.id,
         first_name: user.first_name,
@@ -249,11 +250,12 @@ const AccountsService = {
     const { user } = contact;
     return {
       id: contact.id,
+      account_id: contact.account_id,
       name: xss(contact.name),
       title: xss(contact.title),
       phone: xss(contact.phone),
       email: xss(contact.email),
-      date_created: xss(contact.date_created),
+      date_created: new Date(contact.date_created),
       user: {
         id: user.id,
         first_name: user.first_name,
