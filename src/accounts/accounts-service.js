@@ -90,6 +90,7 @@ const AccountsService = {
       .then((account) =>
         AccountsService.insertAddress(db, account.id, address)
       );
+    // .then((account) => AccountsService.getById(db, account.id))
   },
 
   insertAddress(db, account_id, address) {

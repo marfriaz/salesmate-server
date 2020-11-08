@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const AccountsService = require("./accounts-service");
+const AddressesService = require("../addresses/addresses-service");
 const { requireAuth } = require("../middleware/jwt-auth");
 
 const accountsRouter = express.Router();
@@ -9,6 +10,50 @@ const jsonBodyParser = express.json();
 accountsRouter
   .route("/")
 
+  // .get(async (req, res, next) => {
+  //   try {
+  //     const getAccountPromise = AccountsService.getById(req.app.get("db"), 123);
+  //     const getAddressPromise = AddressesService.getById(
+  //       req.app.get("db"),
+  //       123
+  //     );
+  //     // once these 2 promises resolve
+  //     const account = await getAccountPromise;
+  //     const address = await getAddressPromise;
+  //     res.json({
+  //       account,
+  //       address,
+  //     });
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  //   AccountsService.getById(req.app.get("db"), 123)
+  //     .then((accounts) => {
+  //       AddressesService.getById(req.app.get("db"), 123)
+  //         .then((address) => {
+  //           res.json(accounts + address)
+  //         })
+  //       res.json(accounts.map(AccountsService.serializeAccount));
+  //     })
+  // })
+
+  // THIS IS STILL ON :) - feel free to save/not save files as needed - Uzair
+  // .get(async (req, res, next) => {
+  //   const accountsPromise = AccountsService.getAllAccounts();
+  //   const addressesPromise = AddressesService.getAllAddresses();
+  //   const addresses = await addressesPromise;
+  //   const accounts = await accountsPromise;
+  //   const accountsWithAddresses = accounts.map((account) => {
+  //     const address = addresses.find(
+  //       (address) => address.account_id === account.id
+  //     );
+  //     return {
+  //       account,
+  //       address,
+  //     };
+  //   }); // [{account: {id: 1}, address: {account_id: 1}}, {account: {}, address: undefined}, ...]
+  // })
+
   .get((req, res, next) => {
     AccountsService.getAllAccounts(req.app.get("db"))
       .then((accounts) => {
@@ -16,7 +61,6 @@ accountsRouter
       })
       .catch(next);
   })
-
   .post(requireAuth, jsonBodyParser, (req, res, next) => {
     const {
       name,

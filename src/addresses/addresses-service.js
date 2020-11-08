@@ -2,6 +2,12 @@ const xss = require("xss");
 const AccountsService = require("../accounts/accounts-service");
 
 const AddressesService = {
+  // getById(db, account_id) {
+  //   return db
+  //     .from("addresses")
+  //     .where("addresses.account_id", account_id)
+  //     .select("*");
+  // },
   insertAddress(db, account_id, address) {
     return db
       .raw(
