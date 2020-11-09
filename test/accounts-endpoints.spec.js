@@ -11,6 +11,8 @@ describe("Accounts Endpoints", function () {
     testAddresses,
   } = helpers.makeAccountsFixtures();
 
+  const { testContacts } = helpers.makeContactsFixtures();
+
   before("make knex instance", () => {
     db = knex({
       client: "pg",
@@ -71,6 +73,97 @@ describe("Accounts Endpoints", function () {
       });
     };
 
+  describe(`POST /api/accounts`, () => {
+    beforeEach(() => helpers.seedUsers(db, testUsers));
+    const testUser = helpers.makeUsersArray()[1];
+
+    const requiredFields = ["name", "website", "phone", "country"];
+
+    requiredFields.forEach((field) => {
+      const newaccount = {
+        name: "Test New Account Name",
+        website: "Test Website",
+        phone: "111",
+        country: "Test Country",
+        stage: "Lead",
+        industry: "Aviation",
+        territory: "NAMER",
+        employee_range: "10,000+",
+        fax: "0",
+        linkedin: null,
+        street: null,
+        city: null,
+        zip_code: null,
+        state: null,
+      };
+      context(
+        "Given there is a required field missing from the request body",
+        () => {
+          it(`responds with 400 and an error message when the '${field}' is missing`, () => {
+            delete newaccount[field];
+
+            return supertest(app)
+              .post("/api/accounts")
+              .set("Content-Type", "application/json")
+              .set("Authorization", helpers.makeAuthHeader(testUser))
+              .send(newaccount)
+              .expect(400, {
+                error: `Missing '${field}' in request body`,
+              });
+          });
+        }
+      );
+    });
+
+    context(
+      "Given all required fields are included in the request body",
+      () => {
+        it(`creates an account, responding with 201 and the new account`, () => {
+          const newaccount = {
+            name: "Test New Account Name",
+            website: "Test Website",
+            phone: "111",
+            country: "Test Country",
+            stage: "Lead",
+            industry: "Aviation",
+            territory: "NAMER",
+            employee_range: "10,000+",
+            fax: "0",
+            linkedin: null,
+            street: null,
+            city: null,
+            zip_code: null,
+            state: null,
+          };
+          return supertest(app)
+            .post("/api/accounts")
+            .set("Content-Type", "application/json")
+            .set("Authorization", helpers.makeAuthHeader(testUser))
+            .send(newaccount)
+            .expect(201)
+            .expect((res) => {
+              expect(res.body.name).to.eql(newaccount.name);
+              expect(res.body.website).to.eql(newaccount.website);
+              expect(res.body.phone).to.eql(newaccount.phone);
+              expect(res.body.address.country).to.eql(newaccount.country);
+              expect(res.body).to.have.property("id");
+              expect(res.headers.location).to.eql(
+                `/api/accounts/${res.body.id}`
+              );
+              const expected = new Date().toLocaleString();
+              const actual = new Date(res.body.date_created).toLocaleString();
+              expect(actual).to.eql(expected);
+            })
+            .then((res) =>
+              supertest(app)
+                .get(`/api/accounts/${res.body.id}`)
+                .expect(res.body)
+            );
+        });
+      }
+    );
+  });
+
   describe(`GET /api/accounts/:account_id`, () => {
     context(`Given no accounts`, () => {
       beforeEach(() => helpers.seedUsers(db, testUsers));
@@ -79,6 +172,7 @@ describe("Accounts Endpoints", function () {
         const accountId = 123456;
         return supertest(app)
           .get(`/api/accounts/${accountId}`)
+
           .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
           .expect(404, { error: `Account doesn't exist` });
       });
@@ -241,6 +335,76 @@ describe("Accounts Endpoints", function () {
               .get(`/api/accounts/${idToUpdate}`)
               .expect(expectedAccount)
           );
+      });
+    });
+  });
+
+  describe(`GET /api/accounts/:account_id/contacts`, () => {
+    context(`Given no contacts`, () => {
+      beforeEach("insert accounts", () =>
+        helpers.seedAccountsTables(db, testUsers, testAccounts, testAddresses)
+      );
+
+      it(`responds with 404`, () => {
+        const accountId = 2;
+        return supertest(app)
+          .get(`/api/accounts/${accountId}/contacts`)
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
+          .expect(200);
+      });
+    });
+
+    context("Given there are contacts in the database", () => {
+      beforeEach("insert accounts", () =>
+        helpers.seedContactsTables(db, testUsers, testAccounts, testContacts)
+      );
+
+      it("responds with 200 and the contacts for the specified account", () => {
+        const accountId = 2;
+        const expectedContact = helpers.makeExpectedContact(
+          testUsers,
+          testAccounts[accountId - 1],
+          testContacts
+        );
+        return supertest(app)
+          .get(`/api/accounts/${accountId}/contacts`)
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
+          .expect(200, expectedContact);
+      });
+    });
+  });
+
+  describe(`GET /api/accounts/stage/:accountStage`, () => {
+    context(`Given stage doesn't exist`, () => {
+      beforeEach("insert accounts", () =>
+        helpers.seedAccountsTables(db, testUsers, testAccounts, testAddresses)
+      );
+
+      it(`responds with 404`, () => {
+        const stage = "nostage";
+        return supertest(app)
+          .get(`/api/accounts/stage/${stage}`)
+          .expect(404, { error: `Account stage doesn't exist` });
+      });
+    });
+
+    context("Given stage does exist", () => {
+      beforeEach("insert accounts", () =>
+        helpers.seedAccountsTables(db, testUsers, testAccounts, testAddresses)
+      );
+
+      it("responds with 200 and the specified accounts", () => {
+        const stage = "Lead";
+        const accounts = testAccounts.map((account) =>
+          helpers.makeexpectedAccount(testUsers, account, testAddresses)
+        );
+        const expectedAccounts = accounts.filter(
+          (account) => account.stage === stage
+        );
+
+        return supertest(app)
+          .get(`/api/accounts/stage/${stage}`)
+          .expect(200, expectedAccounts);
       });
     });
   });

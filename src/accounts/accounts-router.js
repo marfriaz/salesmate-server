@@ -63,8 +63,8 @@ accountsRouter
     };
 
     for (const [key, value] of Object.entries(requiredFields))
-      if (value == null)
-        return res.status(400).json({
+      if (value == "" || value == null)
+        return res.status(400).send({
           error: `Missing '${key}' in request body`,
         });
 
@@ -215,7 +215,7 @@ async function checkAccountStageExists(req, res, next) {
       stanardizedStage
     );
 
-    if (!accounts)
+    if (accounts.length === 0)
       return res.status(404).json({
         error: `Account stage doesn't exist`,
       });
