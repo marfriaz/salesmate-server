@@ -5,7 +5,7 @@ const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
 const accountsRouter = require("./accounts/accounts-router");
 const addressesRouter = require("./addresses/addresses-router");
-const notesRouter = require("./notes/notes-router");
+const NotesRouter = require("./notes/notes-router");
 const contactsRouter = require("./contacts/contacts-router");
 const authRouter = require("./auth/auth-router");
 const usersRouter = require("./users/users-router");
@@ -22,7 +22,7 @@ app.use(helmet());
 
 app.use("/api/accounts", accountsRouter);
 app.use("/api/addresses", addressesRouter);
-app.use("/api/notes", notesRouter);
+app.use("/api/notes", NotesRouter);
 app.use("/api/contacts", contactsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);

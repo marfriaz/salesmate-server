@@ -55,8 +55,6 @@ ContactsRouter.route("/:contact_id")
       email,
     };
 
-    console.log(contactToUpdate);
-
     const numberOfValues = Object.values(contactToUpdate).filter(Boolean)
       .length;
 
@@ -83,9 +81,6 @@ ContactsRouter.route("/:contact_id")
 
 async function checkContactIdExists(req, res, next) {
   try {
-    // suspends execution of rest of function until promise is fulfilled or rejected
-    // and it yields the control back to where the async function was called
-    // if waiting for that
     const contact = await ContactsService.getById(
       req.app.get("db"),
       req.params.contact_id

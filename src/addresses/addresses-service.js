@@ -1,7 +1,7 @@
 const xss = require("xss");
 const AccountsService = require("../accounts/accounts-service");
 
-const AddressesService = {
+const AddressService = {
   insertAddress(db, account_id, address) {
     return db
       .raw(
@@ -20,4 +20,4 @@ const AddressesService = {
   },
 };
 
-module.exports = AddressesService;
+module.exports = AddressService;

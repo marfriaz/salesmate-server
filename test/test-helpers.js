@@ -144,6 +144,32 @@ function makeContactsArray(users, accounts) {
   ];
 }
 
+function makeNotesArray(users, accounts) {
+  return [
+    {
+      id: 1,
+      user_id: users[0].id,
+      account_id: accounts[0].id,
+      text: "Nisi suscipit illum itaque error.",
+      date_created: new Date("2029-01-22T16:28:32.615Z"),
+    },
+    {
+      id: 2,
+      user_id: users[1].id,
+      account_id: accounts[1].id,
+      text: "Et sequi ipsa rem nulla repellat facilis aperiam aperiam.",
+      date_created: new Date("2029-01-22T16:28:32.615Z"),
+    },
+    {
+      id: 3,
+      user_id: users[2].id,
+      account_id: accounts[2].id,
+      text: "Qui ea facere laudantium quis.",
+      date_created: new Date("2029-01-22T16:28:32.615Z"),
+    },
+  ];
+}
+
 function makeexpectedAccount(users, account, addresses) {
   const user = users.find((user) => user.id === account.user_id);
   const address = addresses.find(
@@ -208,6 +234,27 @@ function makeExpectedContact(users, account, contacts) {
   ];
 }
 
+function makeExpectedNote(users, account, notes) {
+  const user = users.find((user) => user.id === account.user_id);
+  const note = notes.find((note) => note.account_id === account.id);
+
+  return [
+    {
+      id: note.id,
+      account_id: account.id,
+      text: note.text,
+      date_created: note.date_created.toISOString(),
+      user: {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        date_created: user.date_created,
+      },
+    },
+  ];
+}
+
 function makeMaliciousAccount(user) {
   const maliciousAccount = {
     id: 911,
@@ -260,6 +307,14 @@ function makeContactsFixtures() {
   const testContacts = makeContactsArray(testUsers, testAccounts);
 
   return { testUsers, testAccounts, testContacts };
+}
+
+function makeNotesFixtures() {
+  const testUsers = makeUsersArray();
+  const testAccounts = makeAccountsArray(testUsers);
+  const testNotes = makeNotesArray(testUsers, testAccounts);
+
+  return { testUsers, testAccounts, testNotes };
 }
 
 function cleanTables(db) {
@@ -326,6 +381,17 @@ function seedContactsTables(db, users, accounts, contacts) {
   });
 }
 
+function seedNotesTables(db, users, accounts, notes) {
+  return db.transaction(async (trx) => {
+    await seedUsers(trx, users);
+    await trx.into("accounts").insert(accounts);
+    await trx.into("notes").insert(notes);
+    await trx.raw(`SELECT setval('notes_id_seq', ?)`, [
+      notes[notes.length - 1].id,
+    ]);
+  });
+}
+
 function seedMaliciousAccount(db, user, account) {
   const badAddress = {
     id: 1,
@@ -357,13 +423,16 @@ module.exports = {
   makeContactsArray,
   makeexpectedAccount,
   makeExpectedContact,
+  makeExpectedNote,
   makeMaliciousAccount,
 
   makeAccountsFixtures,
   makeContactsFixtures,
+  makeNotesFixtures,
   cleanTables,
   seedAccountsTables,
   seedContactsTables,
+  seedNotesTables,
   seedMaliciousAccount,
   makeAuthHeader,
   seedUsers,

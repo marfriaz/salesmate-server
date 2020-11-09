@@ -51,8 +51,8 @@ const NotesService = {
     const { user } = note;
     return {
       id: note.id,
-      text: xss(note.text),
       account_id: note.account_id,
+      text: xss(note.text),
       date_created: new Date(note.date_created),
       user: {
         id: user.id,

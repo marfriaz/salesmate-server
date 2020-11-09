@@ -13,6 +13,8 @@ describe("Accounts Endpoints", function () {
 
   const { testContacts } = helpers.makeContactsFixtures();
 
+  const { testNotes } = helpers.makeNotesFixtures();
+
   before("make knex instance", () => {
     db = knex({
       client: "pg",
@@ -370,6 +372,41 @@ describe("Accounts Endpoints", function () {
           .get(`/api/accounts/${accountId}/contacts`)
           .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
           .expect(200, expectedContact);
+      });
+    });
+  });
+
+  describe(`GET /api/accounts/:account_id/notes`, () => {
+    context(`Given no notes`, () => {
+      beforeEach("insert accounts", () =>
+        helpers.seedAccountsTables(db, testUsers, testAccounts, testAddresses)
+      );
+
+      it(`responds with 404`, () => {
+        const accountId = 2;
+        return supertest(app)
+          .get(`/api/accounts/${accountId}/notes`)
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
+          .expect(200);
+      });
+    });
+
+    context("Given there are notes in the database", () => {
+      beforeEach("insert accounts", () =>
+        helpers.seedNotesTables(db, testUsers, testAccounts, testNotes)
+      );
+
+      it("responds with 200 and the notes for the specified account", () => {
+        const accountId = 2;
+        const expectedNote = helpers.makeExpectedNote(
+          testUsers,
+          testAccounts[accountId - 1],
+          testNotes
+        );
+        return supertest(app)
+          .get(`/api/accounts/${accountId}/notes`)
+          .set("Authorization", helpers.makeAuthHeader(testUsers[0]))
+          .expect(200, expectedNote);
       });
     });
   });

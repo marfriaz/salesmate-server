@@ -107,6 +107,7 @@ const AccountsService = {
       .select(
         "note.id",
         "note.user_id",
+        "note.account_id",
         "note.text",
         "note.date_created",
         db.raw(
@@ -203,21 +204,6 @@ const AccountsService = {
         email: user.email,
         date_created: new Date(user.date_created),
       },
-      // notes: {
-      //   id: notes.id,
-      //   user_id: xss(notes.user_id),
-      //   text: xss(notes.text),
-      //   date_created: xss(notes.date_created),
-      // },
-      // contacts: {
-      //   id: contacts.id,
-      //   user_id: xss(contacts.user_id),
-      //   name: xss(contacts.name),
-      //   title: xss(contacts.title),
-      //   phone: xss(contacts.phone),
-      //   email: xss(contacts.email),
-      //   date_created: xss(contacts.date_created),
-      // },
     };
   },
 
@@ -233,7 +219,7 @@ const AccountsService = {
     const { user } = note;
     return {
       id: note.id,
-      user_id: xss(note.user_id),
+      account_id: note.account_id,
       text: xss(note.text),
       date_created: new Date(note.date_created),
       user: {
@@ -245,7 +231,6 @@ const AccountsService = {
       },
     };
   },
-
   serializeContact(contact) {
     const { user } = contact;
     return {

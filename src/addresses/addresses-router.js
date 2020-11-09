@@ -1,9 +1,7 @@
 const express = require("express");
 const path = require("path");
-const AddressesService = require("./addresses-service");
+const AddressService = require("./addresses-service");
 const AccountsService = require("../accounts/accounts-service");
-
-const { requireAuth } = require("../middleware/jwt-auth");
 
 const addressesRouter = express.Router();
 const jsonBodyParser = express.json();
@@ -36,7 +34,7 @@ addressesRouter
         },
       });
 
-    AddressesService.updateAddress(
+    AddressService.updateAddress(
       req.app.get("db"),
       req.params.account_id,
       addressToUpdate
@@ -50,12 +48,8 @@ addressesRouter
       .catch(next);
   });
 
-/* async/await syntax for promises */
 async function checkAccountIdExists(req, res, next) {
   try {
-    // suspends execution of rest of function until promise is fulfilled or rejected
-    // and it yields the control back to where the async function was called
-    // if waiting for that
     const account = await AccountsService.getById(
       req.app.get("db"),
       req.params.account_id
