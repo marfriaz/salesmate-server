@@ -40,37 +40,12 @@ const AccountsService = {
               'date_created', usr.date_created
            )
           ) AS "user"`
-        ),
-        db.raw(
-          `json_strip_nulls(
-              json_build_object(
-                'id', note.id,
-                'user_id', note.user_id,
-                'account_id', note.account_id,
-                'text', note.text,
-                'date_created', note.date_created
-             )
-            ) AS "notes"`
-        ),
-        db.raw(
-          `json_strip_nulls(
-              json_build_object(
-                'id', con.id,
-                'account_id', con.account_id,
-                'name', con.name,
-                'title', con.title,
-                'phone', con.phone,
-                'email', con.email,
-                'date_created', note.date_created
-             )
-            ) AS "contacts"`
         )
       )
       .leftJoin("addresses AS add", "acc.id", "add.account_id")
       .leftJoin("users AS usr", "acc.user_id", "usr.id")
-      .leftJoin("notes AS note", "acc.id", "note.account_id")
-      .leftJoin("contacts AS con", "acc.id", "con.account_id")
-      .groupBy("acc.id", "add.id", "usr.id", "note.id", "con.id");
+
+      .groupBy("acc.id", "add.id", "usr.id");
   },
 
   getById(db, id) {
