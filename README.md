@@ -46,7 +46,7 @@ My background is working in Operations for a Data Assurance team at Linkedin, wh
 
 ## Entity Relationship Diagram (ERD)
 
-![ERD](https://imgur.com/JcInAua)
+![ERD](https://i.imgur.com/JcInAua.png)
 
 ## Getting Started
 
