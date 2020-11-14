@@ -1,10 +1,10 @@
-# Gymbnb API
+# SalesMate API
 
 ## Introduction
 
 SalesMate: a Customer Relationship Management tool. Users can track account information, notes and contacts in one place.
 
-This repo is the backend for Gymbnb. You can see the Live Demo at: [https://salesmate.vercel.app/](https://salesmate.vercel.app/).
+This repo is the backend for SalesMate. You can see the Live Demo at: [https://salesmate.vercel.app/](https://salesmate.vercel.app/).
 
 The front end client can be found at [https://salesmate.vercel.app/](https://salesmate.vercel.app/).
 
@@ -36,7 +36,7 @@ To try out this app, you can create a new account from the Sign Up page or use t
 
 ## Features
 
-- 4 database tables: users, accounts, addresses, contacts, and notes
+- 4 database tables: users, accounts, addresses, contacts and notes
 - Authentication via JWT
 - XSS Middleware
 
@@ -46,7 +46,15 @@ My background is working in Operations for a Data Assurance team at Linkedin, wh
 
 ## Entity Relationship Diagram (ERD)
 
-![ERD](https://i.imgur.com/JcInAua.png)
+![ERD](https://i.imgur.com/axBNSj0.png)
+
+## Video Demos
+
+#### Video Demos in mobile viewport but this App supports a responsive design
+
+- [SalesMate (Youtube Vid Demo)](https://www.youtube.com/watch?v=ewOhZxTmeWs&feature=youtu.be&ab_channel=MarcoFriaz)
+
+[![Watch the video](https://i.imgur.com/7SRjxdY.png)](https://www.youtube.com/watch?v=ewOhZxTmeWs&feature=youtu.be&ab_channel=MarcoFriaz)
 
 ## Getting Started
 
@@ -55,7 +63,7 @@ Major dependencies for this repo include Postgres and Node.
 To get setup locally, do the following:
 
 1. Clone this repository to your machine, cd into the directory and run npm install
-2. Create the dev and test databases: createdb -U postgres -d gymbnb and createdb -U postgres -d gymbnb-test
+2. Create the dev and test databases: createdb -U postgres -d salesmate and createdb -U postgres -d salesmate-test
 
 3. Create a `.env` and a `.env.test` file in the project root
 
