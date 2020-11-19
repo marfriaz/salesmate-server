@@ -154,7 +154,7 @@ const AccountsService = {
     return {
       id: account.id,
       name: xss(account.name),
-      stage: xss(account.stage),
+      stage: AccountsService.serializeAccountStage(account.stage),
       website: xss(account.website),
       industry: xss(account.industry),
       territory: xss(account.territory),
@@ -180,6 +180,14 @@ const AccountsService = {
         date_created: new Date(user.date_created),
       },
     };
+  },
+
+  serializeAccountStage(stage) {
+    let serializedStage = stage
+      .split("-")
+      .map((s) => s.substr(0, 1).toUpperCase() + s.substr(1))
+      .join(" ");
+    return xss(serializedStage);
   },
 
   serializeNote(note) {

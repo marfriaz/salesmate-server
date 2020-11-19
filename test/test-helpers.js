@@ -36,7 +36,7 @@ function makeAccountsArray(users) {
       id: 1,
       user_id: users[0].id,
       name: "Wal-Mart",
-      stage: "Sold",
+      stage: "sold",
       website: "www.wal-mart.com",
       industry: "Food Production",
       territory: "NAMER",
@@ -50,7 +50,7 @@ function makeAccountsArray(users) {
       id: 2,
       user_id: users[1].id,
       name: "Exxon Mobil",
-      stage: "Lead",
+      stage: "lead",
       website: "www.exxonmobil.com",
       industry: "Computer Software",
       territory: "NAMER",
@@ -64,7 +64,7 @@ function makeAccountsArray(users) {
       id: 3,
       user_id: users[2].id,
       name: "Chevron",
-      stage: "Sold",
+      stage: "sold",
       website: "www.chevron.com",
       industry: "Nonprofit Organization Management",
       territory: "NAMER",
@@ -179,7 +179,10 @@ function makeexpectedAccount(users, account, addresses) {
   return {
     id: account.id,
     name: account.name,
-    stage: account.stage,
+    stage: account.stage
+      .split("-")
+      .map((s) => s.substr(0, 1).toUpperCase() + s.substr(1))
+      .join(" "),
     website: account.website,
     industry: account.industry,
     territory: account.territory,
@@ -257,7 +260,7 @@ function makeMaliciousAccount(user) {
     id: 911,
     user_id: user.id,
     name: 'Naughty naughty very naughty <script>alert("xss");</script>',
-    stage: "Sold",
+    stage: "sold",
     website: "www.wal-mart.com",
     industry: "Food Production",
     territory: "NAMER",

@@ -195,7 +195,10 @@ async function checkAccountIdExists(req, res, next) {
 }
 
 async function checkAccountStageExists(req, res, next) {
-  const stanardizedStage = req.params.accountStage;
+  const stanardizedStage = req.params.accountStage
+    .split(" ")
+    .map((s) => s.substr(0, 1).toLowerCase() + s.substr(1))
+    .join("-");
 
   try {
     const accounts = await AccountsService.getByStage(
