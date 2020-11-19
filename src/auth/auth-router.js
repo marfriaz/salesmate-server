@@ -1,10 +1,10 @@
 const express = require("express");
 const AuthService = require("./auth-service");
 
-const authRouter = express.Router();
+const AuthRouter = express.Router();
 const jsonBodyParser = express.json();
 
-authRouter.post("/login", jsonBodyParser, (req, res, next) => {
+AuthRouter.post("/login", jsonBodyParser, (req, res, next) => {
   const { email, password } = req.body;
   const loginUser = { email, password };
 
@@ -40,4 +40,4 @@ authRouter.post("/login", jsonBodyParser, (req, res, next) => {
     .catch(next);
 });
 
-module.exports = authRouter;
+module.exports = AuthRouter;

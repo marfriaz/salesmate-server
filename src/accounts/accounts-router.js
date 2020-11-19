@@ -3,11 +3,10 @@ const path = require("path");
 const AccountsService = require("./accounts-service");
 const { requireAuth } = require("../middleware/jwt-auth");
 
-const accountsRouter = express.Router();
+const AccountsRouter = express.Router();
 const jsonBodyParser = express.json();
 
-accountsRouter
-  .route("/")
+AccountsRouter.route("/")
 
   .get((req, res, next) => {
     AccountsService.getAllAccounts(req.app.get("db"))
@@ -80,8 +79,7 @@ accountsRouter
       .catch(next);
   });
 
-accountsRouter
-  .route("/:account_id")
+AccountsRouter.route("/:account_id")
   .all(checkAccountIdExists)
   .get((req, res) => {
     res.json(AccountsService.serializeAccount(res.account));
@@ -142,8 +140,7 @@ accountsRouter
       .catch(next);
   });
 
-accountsRouter
-  .route("/:account_id/notes")
+AccountsRouter.route("/:account_id/notes")
   .all(requireAuth)
   .all(checkAccountIdExists)
   .get((req, res, next) => {
@@ -154,8 +151,7 @@ accountsRouter
       .catch(next);
   });
 
-accountsRouter
-  .route("/:account_id/contacts")
+AccountsRouter.route("/:account_id/contacts")
   .all(requireAuth)
   .all(checkAccountIdExists)
   .get((req, res, next) => {
@@ -169,8 +165,7 @@ accountsRouter
       .catch(next);
   });
 
-accountsRouter
-  .route("/stage/:accountStage")
+AccountsRouter.route("/stage/:accountStage")
 
   .all(checkAccountStageExists)
   .get((req, res) => {
@@ -200,10 +195,7 @@ async function checkAccountIdExists(req, res, next) {
 }
 
 async function checkAccountStageExists(req, res, next) {
-  const stanardizedStage = req.params.accountStage
-    .split(" ")
-    .map((s) => s.substr(0, 1).toLowerCase() + s.substr(1))
-    .join("-");
+  const stanardizedStage = req.params.accountStage;
 
   try {
     const accounts = await AccountsService.getByStage(
@@ -223,4 +215,4 @@ async function checkAccountStageExists(req, res, next) {
   }
 }
 
-module.exports = accountsRouter;
+module.exports = AccountsRouter;

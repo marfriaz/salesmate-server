@@ -3,12 +3,12 @@ const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
-const accountsRouter = require("./accounts/accounts-router");
-const addressRouter = require("./address/address-router");
+const AccountsRouter = require("./accounts/accounts-router");
+const AddressRouter = require("./address/address-router");
 const NotesRouter = require("./notes/notes-router");
-const contactsRouter = require("./contacts/contacts-router");
-const authRouter = require("./auth/auth-router");
-const usersRouter = require("./users/users-router");
+const ContactsRouter = require("./contacts/contacts-router");
+const AuthRouter = require("./auth/auth-router");
+const UsersRouter = require("./users/users-router");
 
 const app = express();
 
@@ -20,12 +20,12 @@ app.use(
 app.use(cors());
 app.use(helmet());
 
-app.use("/api/accounts", accountsRouter);
-app.use("/api/addresses", addressRouter);
+app.use("/api/accounts", AccountsRouter);
+app.use("/api/addresses", AddressRouter);
 app.use("/api/notes", NotesRouter);
-app.use("/api/contacts", contactsRouter);
-app.use("/api/auth", authRouter);
-app.use("/api/users", usersRouter);
+app.use("/api/contacts", ContactsRouter);
+app.use("/api/auth", AuthRouter);
+app.use("/api/users", UsersRouter);
 
 app.use(function errorHandler(error, req, res, next) {
   let response;

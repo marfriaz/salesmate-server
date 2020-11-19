@@ -2,10 +2,10 @@ const express = require("express");
 const path = require("path");
 const UsersService = require("./users-service");
 
-const usersRouter = express.Router();
+const UsersRouter = express.Router();
 const jsonBodyParser = express.json();
 
-usersRouter.post("/", jsonBodyParser, (req, res, next) => {
+UsersRouter.post("/", jsonBodyParser, (req, res, next) => {
   const { password, email, first_name, last_name } = req.body;
 
   for (const field of ["first_name", "last_name", "email", "password"])
@@ -45,4 +45,4 @@ usersRouter.post("/", jsonBodyParser, (req, res, next) => {
     .catch(next);
 });
 
-module.exports = usersRouter;
+module.exports = UsersRouter;
