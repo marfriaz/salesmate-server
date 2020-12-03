@@ -6,7 +6,7 @@ SalesMate: a Customer Relationship Management tool. Users can track account info
 
 This repo is the backend for SalesMate. You can see the Live Demo at: [https://salesmate.vercel.app/](https://salesmate.vercel.app/).
 
-The front end client can be found at [https://salesmate.vercel.app/](https://salesmate.vercel.app/).
+The front end client can be found at [https://github.com/marfriaz/salesmate-client](https://github.com/marfriaz/salesmate-client).
 
 To try out this app, you can create a new account from the Sign Up page or use the Demo Account listed below.
 
