@@ -174,8 +174,6 @@ function cache(cacheKey) {
         throw err;
       }
       if (data !== null) {
-        console.log("YOO");
-        console.log(data);
         res.send(JSON.parse(data));
       } else {
         next();
