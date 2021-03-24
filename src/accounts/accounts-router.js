@@ -7,7 +7,8 @@ const AccountsRouter = express.Router();
 const jsonBodyParser = express.json();
 
 AccountsRouter.route("/")
-  .get(cache("accounts_cache"), (req, res, next) => {
+  // .get(cache("accounts_cache"), (req, res, next) => {
+  .get((req, res, next) => {
     AccountsService.getAllAccounts(req.app.get("db"))
       .then((accounts) => {
         redisCache.setex("accounts_cache", 3600, JSON.stringify(accounts));
@@ -143,7 +144,9 @@ AccountsRouter.route("/:account_id")
 AccountsRouter.route("/:account_id/notes")
   .all(requireAuth)
   .all(checkAccountIdExists)
-  .get(cache("notes_cache"), (req, res, next) => {
+  // .get(cache("notes_cache"), (req, res, next) => {
+
+  .get((req, res, next) => {
     AccountsService.getNotesForAccount(req.app.get("db"), req.params.account_id)
       .then((notes) => {
         redisCache.setex("notes_cache", 3600, JSON.stringify(notes));
@@ -155,7 +158,8 @@ AccountsRouter.route("/:account_id/notes")
 AccountsRouter.route("/:account_id/contacts")
   .all(requireAuth)
   .all(checkAccountIdExists)
-  .get(cache("contacts_cache"), (req, res, next) => {
+  // .get(cache("contacts_cache"), (req, res, next) => {
+  .get((req, res, next) => {
     AccountsService.getContactsForAccount(
       req.app.get("db"),
       req.params.account_id
