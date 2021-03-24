@@ -15,11 +15,19 @@ const app = express();
 app.use(
   morgan(NODE_ENV === "production" ? "tiny" : "common", {
     skip: () => NODE_ENV === "test",
-  }),
-  next()
+  })
 );
-app.use(cors({ origin: false }), next());
-app.use(helmet(), next());
+
+// app.use(cors({ origin: false }));
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 
 app.use("/api/auth", AuthRouter);
 app.use("/api/accounts", AccountsRouter);
