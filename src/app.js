@@ -12,11 +12,11 @@ const UsersRouter = require("./users/users-router");
 
 const app = express();
 
-// app.use(
-//   morgan(NODE_ENV === "production" ? "tiny" : "common", {
-//     skip: () => NODE_ENV === "test",
-//   })
-// );
+app.use(
+  morgan(NODE_ENV === "production" ? "tiny" : "common", {
+    skip: () => NODE_ENV === "test",
+  })
+);
 
 // var corsOptions = {
 //   origin: "http://example.com",
@@ -26,15 +26,15 @@ const app = express();
 
 app.use(cors());
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, Content-Length, X-Requested-With"
-  );
-  next();
-});
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Content-Type, Authorization, Content-Length, X-Requested-With"
+//   );
+//   next();
+// });
 
 app.use(helmet());
 
@@ -48,7 +48,7 @@ app.use("/api/users", UsersRouter);
 app.use(function errorHandler(error, req, res, next) {
   let response;
   if (NODE_ENV === "production") {
-    response = { error: "Server error" };
+    response = { error: "Production Server Error" };
   } else {
     console.error(error);
     response = { error: error.message, object: error };
