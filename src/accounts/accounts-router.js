@@ -170,20 +170,20 @@ AccountsRouter.route("/:account_id/contacts")
       .catch(next);
   });
 
-function cache(cacheKey) {
-  return async (req, res, next) => {
-    redisCache.get(cacheKey, (err, data) => {
-      if (err) {
-        throw err;
-      }
-      if (data !== null) {
-        res.send(JSON.parse(data));
-      } else {
-        next();
-      }
-    });
-  };
-}
+// function cache(cacheKey) {
+//   return async (req, res, next) => {
+//     redisCache.get(cacheKey, (err, data) => {
+//       if (err) {
+//         throw err;
+//       }
+//       if (data !== null) {
+//         res.send(JSON.parse(data));
+//       } else {
+//         next();
+//       }
+//     });
+//   };
+// }
 
 async function checkAccountIdExists(req, res, next) {
   try {

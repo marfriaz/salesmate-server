@@ -17,6 +17,7 @@ app.use(
     skip: () => NODE_ENV === "test",
   })
 );
+console.log("Database_URL", process.env.DATABASE_URL);
 
 // var corsOptions = {
 //   origin: "http://example.com",
