@@ -17,7 +17,24 @@ app.use(
     skip: () => NODE_ENV === "test",
   })
 );
+
+// var corsOptions = {
+//   origin: "http://example.com",
+//   allowedHeaders: "*",
+//   optionsSuccessStatus: 200,
+// };
+
 app.use(cors());
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 app.use(helmet());
 
 app.use("/api/accounts", AccountsRouter);
