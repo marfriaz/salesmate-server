@@ -17,7 +17,7 @@ app.use(
     skip: () => NODE_ENV === "test",
   })
 );
-app.options("*", cors());
+app.use(cors({ origin: false }));
 app.use(helmet());
 
 app.use("/api/accounts", AccountsRouter);
