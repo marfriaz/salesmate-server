@@ -1,10 +1,8 @@
 const express = require("express");
-const fetch = require("node-fetch");
-const redis = require("redis");
 const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
-const { NODE_ENV, REDIS_PORT } = require("./config");
+const { NODE_ENV } = require("./config");
 const AccountsRouter = require("./accounts/accounts-router");
 const AddressRouter = require("./address/address-router");
 const NotesRouter = require("./notes/notes-router");
@@ -13,8 +11,6 @@ const AuthRouter = require("./auth/auth-router");
 const UsersRouter = require("./users/users-router");
 
 const app = express();
-
-const client = redis.createClient(REDIS_PORT);
 
 app.use(
   morgan(NODE_ENV === "production" ? "tiny" : "common", {
