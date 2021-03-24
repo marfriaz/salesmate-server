@@ -15,16 +15,17 @@ const app = express();
 app.use(
   morgan(NODE_ENV === "production" ? "tiny" : "common", {
     skip: () => NODE_ENV === "test",
-  })
+  }),
+  next()
 );
-app.use(cors({ origin: false }));
-app.use(helmet());
+app.use(cors({ origin: false }), next());
+app.use(helmet(), next());
 
+app.use("/api/auth", AuthRouter);
 app.use("/api/accounts", AccountsRouter);
 app.use("/api/addresses", AddressRouter);
 app.use("/api/notes", NotesRouter);
 app.use("/api/contacts", ContactsRouter);
-app.use("/api/auth", AuthRouter);
 app.use("/api/users", UsersRouter);
 
 app.use(function errorHandler(error, req, res, next) {
