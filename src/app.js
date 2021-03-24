@@ -12,11 +12,11 @@ const UsersRouter = require("./users/users-router");
 
 const app = express();
 
-app.use(
-  morgan(NODE_ENV === "production" ? "tiny" : "common", {
-    skip: () => NODE_ENV === "test",
-  })
-);
+// app.use(
+//   morgan(NODE_ENV === "production" ? "tiny" : "common", {
+//     skip: () => NODE_ENV === "test",
+//   })
+// );
 
 // var corsOptions = {
 //   origin: "http://example.com",
@@ -24,13 +24,14 @@ app.use(
 //   optionsSuccessStatus: 200,
 // };
 
-app.use(cors());
+// app.use(cors());
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
   res.header(
     "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
+    "Content-Type, Authorization, Content-Length, X-Requested-With"
   );
   next();
 });
