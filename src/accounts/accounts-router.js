@@ -1,16 +1,16 @@
 const express = require("express");
+const redisCache = require("../redis");
 const path = require("path");
 const AccountsService = require("./accounts-service");
 const { requireAuth } = require("../middleware/jwt-auth");
-
 const AccountsRouter = express.Router();
 const jsonBodyParser = express.json();
 
 AccountsRouter.route("/")
-
-  .get((req, res, next) => {
+  .get(cache("accounts_cache"), (req, res, next) => {
     AccountsService.getAllAccounts(req.app.get("db"))
       .then((accounts) => {
+        redisCache.setex("accounts_cache", 3600, JSON.stringify(accounts));
         res.json(accounts.map(AccountsService.serializeAccount));
       })
       .catch(next);
@@ -143,9 +143,10 @@ AccountsRouter.route("/:account_id")
 AccountsRouter.route("/:account_id/notes")
   .all(requireAuth)
   .all(checkAccountIdExists)
-  .get((req, res, next) => {
+  .get(cache("notes_cache"), (req, res, next) => {
     AccountsService.getNotesForAccount(req.app.get("db"), req.params.account_id)
       .then((notes) => {
+        redisCache.setex("notes_cache", 3600, JSON.stringify(notes));
         res.json(notes.map(AccountsService.serializeNote));
       })
       .catch(next);
@@ -154,26 +155,34 @@ AccountsRouter.route("/:account_id/notes")
 AccountsRouter.route("/:account_id/contacts")
   .all(requireAuth)
   .all(checkAccountIdExists)
-  .get((req, res, next) => {
+  .get(cache("contacts_cache"), (req, res, next) => {
     AccountsService.getContactsForAccount(
       req.app.get("db"),
       req.params.account_id
     )
       .then((contacts) => {
+        redisCache.setex("contacts_cache", 3600, JSON.stringify(contacts));
         res.json(contacts.map(AccountsService.serializeContact));
       })
       .catch(next);
   });
 
-AccountsRouter.route("/stage/:accountStage")
-
-  .all(checkAccountStageExists)
-  .get((req, res) => {
-    const results = res.accounts.map((account) =>
-      AccountsService.serializeAccount(account)
-    );
-    res.send(results);
-  });
+function cache(cacheKey) {
+  return async (req, res, next) => {
+    redisCache.get(cacheKey, (err, data) => {
+      if (err) {
+        throw err;
+      }
+      if (data !== null) {
+        console.log("YOO");
+        console.log(data);
+        res.send(JSON.parse(data));
+      } else {
+        next();
+      }
+    });
+  };
+}
 
 async function checkAccountIdExists(req, res, next) {
   try {
