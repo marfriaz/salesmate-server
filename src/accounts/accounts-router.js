@@ -170,6 +170,16 @@ AccountsRouter.route("/:account_id/contacts")
       .catch(next);
   });
 
+AccountsRouter.route("/stage/:accountStage")
+
+  .all(checkAccountStageExists)
+  .get((req, res) => {
+    const results = res.accounts.map((account) =>
+      AccountsService.serializeAccount(account)
+    );
+    res.send(results);
+  });
+
 // function cache(cacheKey) {
 //   return async (req, res, next) => {
 //     redisCache.get(cacheKey, (err, data) => {
