@@ -171,7 +171,6 @@ AccountsRouter.route("/:account_id/contacts")
   });
 
 AccountsRouter.route("/stage/:accountStage")
-
   .all(checkAccountStageExists)
   .get((req, res) => {
     const results = res.accounts.map((account) =>
@@ -215,15 +214,15 @@ async function checkAccountIdExists(req, res, next) {
 }
 
 async function checkAccountStageExists(req, res, next) {
-  const stanardizedStage = req.params.accountStage
-    .split(" ")
-    .map((s) => s.substr(0, 1).toLowerCase() + s.substr(1))
-    .join("-");
-
   try {
+    const standardizedStage = req.params.accountStage
+      .split(" ")
+      .map((s) => s.substr(0, 1).toLowerCase() + s.substr(1))
+      .join("-");
+
     const accounts = await AccountsService.getByStage(
       req.app.get("db"),
-      stanardizedStage
+      standardizedStage
     );
 
     if (accounts.length === 0)
