@@ -183,10 +183,15 @@ const AccountsService = {
   },
 
   serializeAccountStage(stage) {
-    let serializedStage = stage
-      .split("-")
-      .map((s) => s.substr(0, 1).toUpperCase() + s.substr(1))
-      .join(" ");
+    let serializedStage;
+    if (stage !== null) {
+      serializedStage = stage
+        .split("-")
+        .map((s) => s.substr(0, 1).toUpperCase() + s.substr(1))
+        .join(" ");
+    } else {
+      serializedStage = stage;
+    }
     return xss(serializedStage);
   },
 
