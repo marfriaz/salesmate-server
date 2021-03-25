@@ -10,6 +10,8 @@ const ContactsRouter = require("./contacts/contacts-router");
 const AuthRouter = require("./auth/auth-router");
 const UsersRouter = require("./users/users-router");
 
+process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
 const app = express();
 
 app.use(
