@@ -42,7 +42,7 @@ app.use("/api/users", UsersRouter);
 app.use(function errorHandler(error, req, res, next) {
   let response;
   if (NODE_ENV === "production") {
-    response = { error: "Production Server Error" };
+    response = { error };
   } else {
     console.error(error);
     response = { error: error.message, object: error };
