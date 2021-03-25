@@ -18,12 +18,6 @@ app.use(
   })
 );
 
-// var corsOptions = {
-//   origin: "http://example.com",
-//   allowedHeaders: "*",
-//   optionsSuccessStatus: 200,
-// };
-
 app.use(cors());
 
 // app.use(function (req, res, next) {
