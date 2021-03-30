@@ -1,7 +1,7 @@
 const xss = require("xss");
 
 const AccountsService = {
-  getAllAccounts(db) {
+  getAllAccounts2(db) {
     return db
       .from("accounts AS acc")
       .select(
@@ -44,16 +44,72 @@ const AccountsService = {
       )
       .leftJoin("addresses AS add", "acc.id", "add.account_id")
       .leftJoin("users AS usr", "acc.user_id", "usr.id")
-
       .groupBy("acc.id", "add.id", "usr.id");
   },
+
+  getAllAccounts(db, page) {
+    return db
+      .from("accounts AS acc")
+      .select(
+        "acc.id",
+        "acc.name",
+        "acc.stage",
+        "acc.website",
+        "acc.industry",
+        "acc.territory",
+        "acc.employee_range",
+        "acc.phone",
+        "acc.fax",
+        "acc.linkedin",
+        "acc.user_id",
+        "acc.date_created",
+        db.raw(
+          `json_strip_nulls(
+              json_build_object(
+                'id', add.id,
+                'account_id', add.account_id,
+                'street', add.street,
+                'city', add.city,
+                'zip_code', add.zip_code,
+                'state', add.state,
+                'country', add.country
+             )
+            ) AS "address"`
+        ),
+        db.raw(
+          `json_strip_nulls(
+            json_build_object(
+              'id', usr.id,
+              'first_name', usr.first_name,
+              'last_name', usr.last_name,
+              'email', usr.email,
+              'date_created', usr.date_created
+           )
+          ) AS "user"`
+        )
+      )
+      .leftJoin("addresses AS add", "acc.id", "add.account_id")
+      .leftJoin("users AS usr", "acc.user_id", "usr.id")
+      .orderBy("acc.id", "add.id", "usr.id")
+      .limit(20)
+      .offset(page);
+  },
+
+  // get total count, and offset by 20
 
   getById(db, id) {
     return AccountsService.getAllAccounts(db).where("acc.id", id).first();
   },
 
-  getByStage(db, stage) {
-    return AccountsService.getAllAccounts(db).where("acc.stage", stage);
+  getByStage(db, stage, page) {
+    return AccountsService.getAllAccounts(db, page).where("acc.stage", stage);
+  },
+
+  getByName(db, name, page) {
+    return AccountsService.getAllAccounts(db, page).whereRaw(
+      `LOWER(acc.name) LIKE ?`,
+      `%${name}%`
+    );
   },
 
   insertAccount(db, newAccount, address) {

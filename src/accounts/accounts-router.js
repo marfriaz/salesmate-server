@@ -8,13 +8,31 @@ const jsonBodyParser = express.json();
 
 AccountsRouter.route("/")
   // .get(cache("accounts_cache"), (req, res, next) => {
+
   .get((req, res, next) => {
-    AccountsService.getAllAccounts(req.app.get("db"))
-      .then((accounts) => {
-        // redisCache.setex("accounts_cache", 3600, JSON.stringify(accounts));
-        res.json(accounts.map(AccountsService.serializeAccount));
-      })
-      .catch(next);
+    const { page, name } = req.query;
+    let offset = 0;
+
+    if (page && page > 1) {
+      offset = page * 20 - 20;
+    }
+    if (name && name.length > 0) {
+      AccountsService.getByName(req.app.get("db"), name.toLowerCase(), offset)
+        .then((accounts) => {
+          // redisCache.setex("accounts_cache", 3600, JSON.stringify(accounts));
+          res.json(accounts.map(AccountsService.serializeAccount));
+          res.json(accounts);
+        })
+        .catch(next);
+    } else {
+      AccountsService.getAllAccounts(req.app.get("db"), offset)
+        .then((accounts) => {
+          // redisCache.setex("accounts_cache", 3600, JSON.stringify(accounts));
+          res.json(accounts.map(AccountsService.serializeAccount));
+          res.json(accounts);
+        })
+        .catch(next);
+    }
   })
 
   .post(requireAuth, jsonBodyParser, (req, res, next) => {
@@ -220,9 +238,17 @@ async function checkAccountStageExists(req, res, next) {
       .map((s) => s.substr(0, 1).toLowerCase() + s.substr(1))
       .join("-");
 
+    let page = req.query.page;
+    let offset = 0;
+
+    if (page && page > 1) {
+      offset = page * 20 - 20;
+    }
+
     const accounts = await AccountsService.getByStage(
       req.app.get("db"),
-      standardizedStage
+      standardizedStage,
+      offset
     );
 
     if (accounts.length === 0)
